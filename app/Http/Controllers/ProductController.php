@@ -32,39 +32,44 @@ class ProductController extends Controller
     public function getAll()
     {
         $products = Product::where('reserved', null)->get();
+        if ($products->count() > 0) {
+            $product = $products->first();
 
-        $counts = [];
-        foreach ($products as $product) {
-            if (isset($counts[$product->name])) {
+            $collection = collect([
+                $product->name => collect()
+            ]);
+            foreach ($products as $product) {
+                $item = $collection->get($product->name);
+                if (!$item) {
+                    $collection->push([
+                        $product->name => collect()
+                    ]);
+                    $item = $collection->get($product->name);
 
-                $counts[$product->name]->amount++;
-            } else {
-                $product->amount = 1;
-                $counts[$product->name] = $product;
+                }
+                $item->push(new ProductResource($product));
             }
-        }
 
-        $collection = collect([]);
-        foreach ($counts as $product) {
-            $collection->push($product);
+            return $collection;
         }
-
-        return ProductResource::collection($collection);
+        return null;
     }
 
     public function getByName(string $name)
     {
-        $product = Product::where([
+        $products = Product::where([
             ['reserved', '=', null],
             ['name', '=', $name]
-        ])
-            ->get();
+        ])->get();
 
-        if ($product->count() > 0) {
-            $p = $product->first();
-            $p->amount =  $product->count();
 
-            return $p;
+        if ($products->count() > 0) {
+            $collection = collect();
+            foreach ($products as $product) {
+                $collection->push(new ProductResource($product));
+            }
+
+            return $collection;
         }
 
         return response()->json([

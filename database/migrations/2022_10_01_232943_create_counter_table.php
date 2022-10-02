@@ -2,9 +2,10 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePurchasesTable extends Migration
+class CreateCounterTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +14,15 @@ class CreatePurchasesTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchases', function (Blueprint $table) {
+        Schema::create('counter', function (Blueprint $table) {
             $table->id();
-            $table->string('order_code');
-            $table->unsignedBigInteger('product_id');
-            $table->dateTime('confirmed')->nullable();
-            $table->dateTime('sent')->nullable();
+            $table->unsignedBigInteger('count');
             $table->timestamps();
         });
+
+        DB::table('counter')->insert([
+            'count' => 2383280
+        ]);
     }
 
     /**
@@ -30,6 +32,6 @@ class CreatePurchasesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchases');
+        Schema::dropIfExists('counter');
     }
 }

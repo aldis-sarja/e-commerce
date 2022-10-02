@@ -169,4 +169,23 @@ class ProductController extends Controller
             $product->save();
         }
     }
+
+    public function changeName(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'new_name' => 'required',
+        ]);
+
+        $products = Product::where([
+            ['reserved', '=', null],
+            ['name', '=', $request->name]
+        ])->get();
+
+        foreach ($products as $product) {
+            $product->update([
+                'name' => $request->new_name
+            ]);
+        }
+    }
 }

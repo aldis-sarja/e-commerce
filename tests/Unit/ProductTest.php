@@ -283,4 +283,27 @@ class ProductTest extends TestCase
             $this->assertEquals(13, $product->VAT);
         }
     }
+
+    public function test_it_should_be_able_to_change_name_for_product()
+    {
+        $request = new Request([
+            'name' => 'Hammer',
+            'price' => 1200,
+            'description' => 'Hello World!',
+            'VAT' => 21,
+            'amount' => 3,
+        ]);
+        (new ProductController)->createAmount($request);
+
+        (new ProductController)->changeName(new Request([
+            'name' => 'Hammer',
+            'new_name' => 'Axe',
+        ]));
+
+        $products = Product::firstWhere([
+            ['name', '=', 'Axe']
+        ]);
+
+        $this->assertEquals('Axe', $products->name);
+    }
 }

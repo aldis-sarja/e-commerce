@@ -7,6 +7,7 @@ use App\Http\Resources\PurchaseResource;
 use App\Models\Product;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 //use Illuminate\Http\Response;
@@ -110,7 +111,123 @@ class PurchaseController extends Controller
         return response(PurchaseResource::collection($cart));
     }
 
-    private function createNewCode()
+
+    public function subTotal(Request $request)
+    {
+        $orderCode = $request->get('order_code');
+        if (!$orderCode) {
+
+            $tryCookie = $request->cookie('order_code');
+            if ($tryCookie) {
+                $orderCode = $tryCookie;
+
+            } else {
+                return null;
+            }
+        }
+
+        $cart = Purchase::where([
+            ['order_code', '=', $orderCode]
+        ])->with(['product'])->get();
+
+        $sum = 0;
+        foreach ($cart as $purchase) {
+            $sum += $purchase->product->price;
+        }
+
+        return $sum;
+    }
+
+
+    public function amountOfVat(Request $request)
+    {
+        $orderCode = $request->get('order_code');
+        if (!$orderCode) {
+
+            $tryCookie = $request->cookie('order_code');
+            if ($tryCookie) {
+                $orderCode = $tryCookie;
+
+            } else {
+                return null;
+            }
+        }
+
+        $cart = Purchase::where([
+            ['order_code', '=', $orderCode]
+        ])->with(['product'])->get();
+
+        $sum = 0;
+        foreach ($cart as $purchase) {
+            $sum += $purchase->product->price * $purchase->product->VAT / 100;
+        }
+
+        return $sum;
+    }
+
+
+    public function total(Request $request)
+    {
+        $orderCode = $request->get('order_code');
+        if (!$orderCode) {
+
+            $tryCookie = $request->cookie('order_code');
+            if ($tryCookie) {
+                $orderCode = $tryCookie;
+
+            } else {
+                return null;
+            }
+        }
+
+        $cart = Purchase::where([
+            ['order_code', '=', $orderCode]
+        ])->with(['product'])->get();
+
+        $sum = 0;
+        foreach ($cart as $purchase) {
+            $sum += $purchase->product->price
+                + $purchase->product->price
+                * $purchase->product->VAT / 100;
+        }
+
+        return $sum;
+    }
+
+
+    public function buy(Request $request)
+    {
+        $orderCode = $request->get('order_code');
+        if (!$orderCode) {
+
+            $tryCookie = $request->cookie('order_code');
+            if ($tryCookie) {
+                $orderCode = $tryCookie;
+
+            } else {
+                return null;
+            }
+        }
+
+        $cart = Purchase::where([
+            ['order_code', '=', $orderCode]
+        ])->with(['product'])->get();
+
+        foreach ($cart as $purchase) {
+            $purchase->update([
+                'confirmed' => Carbon::now(),
+                'sent' => Carbon::now()
+            ]);
+
+            $product = Product::find($purchase->product_id);
+            $product->delete();
+        }
+
+        return $orderCode;
+    }
+
+
+        private function createNewCode()
     {
         $id = intval(DB::table('counter')->select('count')->get()->first()->count);
 

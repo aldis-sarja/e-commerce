@@ -153,4 +153,142 @@ class PurchaseTest extends TestCase
 
         $this->assertEquals(1, $cart->count());
     }
+
+    public function test_it_should_be_able_to_get_subtotal_of_cart()
+    {
+        $request = new Request([
+            'name' => 'TV',
+            'price' => 51000,
+            'description' => 'Hello World!',
+            'VAT' => 21,
+        ]);
+        (new ProductController)->create($request);
+        (new ProductController)->create($request);
+
+        $products = Product::all();
+
+        $ids = [];
+        foreach ($products as $product) {
+            $ids[] = $product->id;
+        }
+
+        $request = new Request([
+            'products' => $ids
+        ]);
+
+        $cart = (new PurchaseController)->create($request)->original[0];
+
+        $request = new Request([
+            'order_code' => $cart->order_code
+        ]);
+
+        $subTotal = (new PurchaseController)->subTotal($request);
+
+        $this->assertEquals(102000, $subTotal);
+    }
+
+    public function test_it_should_be_able_to_get_Vat_amount_of_cart()
+    {
+        $request = new Request([
+            'name' => 'TV',
+            'price' => 51000,
+            'description' => 'Hello World!',
+            'VAT' => 21,
+        ]);
+        (new ProductController)->create($request);
+        (new ProductController)->create($request);
+
+        $products = Product::all();
+
+        $ids = [];
+        foreach ($products as $product) {
+            $ids[] = $product->id;
+        }
+
+        $request = new Request([
+            'products' => $ids
+        ]);
+
+        $cart = (new PurchaseController)->create($request)->original[0];
+
+        $request = new Request([
+            'order_code' => $cart->order_code
+        ]);
+
+        $subTotal = (new PurchaseController)->amountOfVat($request);
+
+        $this->assertEquals(21420, $subTotal);
+    }
+
+    public function test_it_should_be_able_to_get_total_of_cart()
+    {
+        $request = new Request([
+            'name' => 'TV',
+            'price' => 51000,
+            'description' => 'Hello World!',
+            'VAT' => 21,
+        ]);
+        (new ProductController)->create($request);
+        (new ProductController)->create($request);
+
+        $products = Product::all();
+
+        $ids = [];
+        foreach ($products as $product) {
+            $ids[] = $product->id;
+        }
+
+        $request = new Request([
+            'products' => $ids
+        ]);
+
+        $cart = (new PurchaseController)->create($request)->original[0];
+
+        $request = new Request([
+            'order_code' => $cart->order_code
+        ]);
+
+        $subTotal = (new PurchaseController)->total($request);
+
+        $this->assertEquals(123420, $subTotal);
+    }
+
+
+    public function test_it_should_be_able_to_buy_products()
+    {
+        $request = new Request([
+            'name' => 'TV',
+            'price' => 51000,
+            'description' => 'Hello World!',
+            'VAT' => 21,
+        ]);
+        (new ProductController)->create($request);
+        (new ProductController)->create($request);
+
+        $products = Product::all();
+
+        $ids = [];
+        foreach ($products as $product) {
+            $ids[] = $product->id;
+        }
+
+        $request = new Request([
+            'products' => $ids
+        ]);
+
+        $cart = (new PurchaseController)->create($request)->original[0];
+
+        $request = new Request([
+            'order_code' => $cart->order_code
+        ]);
+
+        $orderCode = (new PurchaseController)->buy($request);
+
+        $this->assertEquals('a000', $orderCode);
+
+        foreach ($ids as $id) {
+            $product = Product::find($id);
+            $this->assertNull($product);
+        }
+    }
 }

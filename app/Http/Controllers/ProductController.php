@@ -188,4 +188,45 @@ class ProductController extends Controller
             ]);
         }
     }
+
+    public function changeAmount(Request $request)
+    {
+        $request->validate([
+                'name' => 'required',
+                'amount' => 'required',
+            ]
+        );
+        $products = Product::where([
+            ['reserved', '=', null],
+            ['name', '=', $request->name]
+        ])->get();
+
+        $currentAmount = $products->count();
+
+        if ($currentAmount === $request->amount) {
+            return;
+        }
+
+        if ($request->amount > $currentAmount) {
+
+            $this->createAmount(
+            new Request([
+                'name' => $products->first()->name,
+                'price' => $products->first()->price,
+                'description' => $products->first()->description,
+                'VAT' => $products->first()->VAT,
+                'amount' =>  $request->amount - $currentAmount
+            ]));
+        } else {
+            $times = $currentAmount - $request->amount;
+            $count = 1;
+            foreach ($products as $product) {
+                $product->delete();
+                $count++;
+                if ($count > $times) {
+                    break;
+                }
+            }
+        }
+    }
 }

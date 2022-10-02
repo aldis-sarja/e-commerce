@@ -306,4 +306,50 @@ class ProductTest extends TestCase
 
         $this->assertEquals('Axe', $products->name);
     }
+
+    public function test_it_should_be_able_to_increase_amount_of_product()
+    {
+        $request = new Request([
+            'name' => 'Hammer',
+            'price' => 1200,
+            'description' => 'Hello World!',
+            'VAT' => 21,
+            'amount' => 1,
+        ]);
+        (new ProductController)->createAmount($request);
+
+        (new ProductController)->changeAmount(new Request([
+            'name' => 'Hammer',
+            'amount' => 3,
+        ]));
+
+        $products = Product::where([
+            ['name', '=', 'Hammer']
+        ])->get();
+
+        $this->assertEquals(3, $products->count());
+    }
+
+    public function test_it_should_be_able_to_decrease_amount_of_product()
+    {
+        $request = new Request([
+            'name' => 'Hammer',
+            'price' => 1200,
+            'description' => 'Hello World!',
+            'VAT' => 21,
+            'amount' => 3,
+        ]);
+        (new ProductController)->createAmount($request);
+
+        (new ProductController)->changeAmount(new Request([
+            'name' => 'Hammer',
+            'amount' => 2,
+        ]));
+
+        $products = Product::where([
+            ['name', '=', 'Hammer']
+        ])->get();
+
+        $this->assertEquals(2, $products->count());
+    }
 }

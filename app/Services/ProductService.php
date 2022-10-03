@@ -23,6 +23,7 @@ class ProductService
 
     public function getAll()
     {
+
         $products = Product::where('reserved', null)->get();
         if ($products->count() > 0) {
             $product = $products->first();
@@ -33,15 +34,13 @@ class ProductService
             foreach ($products as $product) {
                 $item = $collection->get($product->name);
                 if (!$item) {
-                    $collection->push([
-                        $product->name => collect()
-                    ]);
+                    $collection->put($product->name, collect());
+
                     $item = $collection->get($product->name);
-
                 }
-                $item->push(new ProductResource($product));
-            }
+                    $item->push(new ProductResource($product));
 
+            }
             return $collection;
         }
         return null;

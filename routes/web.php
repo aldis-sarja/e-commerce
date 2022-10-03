@@ -14,10 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome', );
-});
+Route::get('/', [App\Http\Controllers\ProductController::class, 'getAll']);
 
-Route::get('/product/add', function (Request $request) {
-    return view('product', );
-});
+Route::post('/product/add', [App\Http\Controllers\ProductController::class, 'createAmount']);

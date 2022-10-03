@@ -34,13 +34,13 @@ class ProductController extends Controller
     public function getAll()
     {
 
-        return view('welcome', ['data' => $this->service->getAll()]);
+        return view('welcome', ['products' => $this->service->getAll()]);
 
     }
 
     public function getByName(string $name)
     {
-        return view('product', ['data' => $this->service->getByName($name)]);
+        return view('product', ['products' => $this->service->getByName($name)]);
     }
 
     public function createAmount(Request $request)

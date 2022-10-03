@@ -52,13 +52,24 @@ class ProductTest extends TestCase
 
     public function test_it_should_be_able_to_get_product_list()
     {
-        (new ProductService)->create(
-            new Request([
+            $request = new Request([
                 'name' => 'TV05',
                 'price' => 38000,
                 'description' => 'Hello World!',
                 'VAT' => 21,
-            ]));
+            ]);
+        (new ProductService)->create($request);
+        (new ProductService)->create($request);
+
+        $request = new Request([
+            'name' => 'TV06',
+            'price' => 38000,
+            'description' => 'Hello World!',
+            'VAT' => 21,
+        ]);
+        (new ProductService)->create($request);
+        (new ProductService)->create($request);
+        (new ProductService)->create($request);
 
         $product = (new ProductService)->getAll()->first()->first();
 
@@ -68,7 +79,7 @@ class ProductTest extends TestCase
         $this->assertEquals(38000, $product->price);
         $this->assertEquals('Hello World!', $product->description);
         $this->assertEquals(21, $product->VAT);
-//        $this->assertEquals(1, $product->amount);
+
 
     }
 

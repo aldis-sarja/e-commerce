@@ -6,6 +6,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Models\Product;
 use App\Models\Purchase;
+use App\Services\ProductService;
+use App\Services\PurchaseService;
 use Illuminate\Http\Request;
 use Tests\Testcase;
 
@@ -32,21 +34,20 @@ class PurchaseTest extends TestCase
             'description' => 'Hello World!',
             'VAT' => 21,
         ]);
-        (new ProductController)->create($request);
+        (new ProductService)->create($request);
 
         $product = Product::all()->first();
 
         $request = new Request([
             'products' => [$product->id]
         ]);
-        $cart = (new PurchaseController)->create($request)->original[0];
 
-//        $cart->original[0]->product->price;
+        $cart = (new PurchaseService)->create($request);
 
         foreach ($cart as $purchase) {
-            $this->assertEquals('a000', $cart->order_code);
-            $this->assertEquals(51000, $cart->product->price);
-            $this->assertEquals(21, $cart->product->VAT);
+            $this->assertEquals('a000', $cart->getPurchases()[0]->order_code);
+            $this->assertEquals(51000, $cart->getPurchases()[0]->product->price);
+            $this->assertEquals(21, $cart->getPurchases()[0]->product->VAT);
         }
     }
 
@@ -58,8 +59,8 @@ class PurchaseTest extends TestCase
             'description' => 'Hello World!',
             'VAT' => 21,
         ]);
-        (new ProductController)->create($request);
-        (new ProductController)->create($request);
+        (new ProductService)->create($request);
+        (new ProductService)->create($request);
 
         $products = Product::all();
 
@@ -72,15 +73,15 @@ class PurchaseTest extends TestCase
             'products' => $ids
         ]);
 
-        $cart = (new PurchaseController)->create($request)->original[0];
+        $cart = (new PurchaseService)->create($request);
 
 
-        $this->assertEquals(2, $cart->count());
+        $this->assertEquals(2, count($cart->getPurchases()));
 
         foreach ($cart as $purchase) {
-            $this->assertEquals('a000', $cart->order_code);
-            $this->assertEquals(51000, $cart->product->price);
-            $this->assertEquals(21, $cart->product->VAT);
+            $this->assertEquals('a000', $cart->getOrderCode());
+            $this->assertEquals(51000, $cart->getPurchases()[0]->product->price);
+            $this->assertEquals(21, $cart->getPurchases()[0]->product->VAT);
         }
     }
 
@@ -92,8 +93,8 @@ class PurchaseTest extends TestCase
             'description' => 'Hello World!',
             'VAT' => 21,
         ]);
-        (new ProductController)->create($request);
-        (new ProductController)->create($request);
+        (new ProductService)->create($request);
+        (new ProductService)->create($request);
 
         $products = Product::all();
 
@@ -106,14 +107,14 @@ class PurchaseTest extends TestCase
             'products' => $ids
         ]);
 
-        $cart = (new PurchaseController)->create($request)->original[0];
+        $cart = (new PurchaseService)->create($request);
 
         $request = new Request([
-            'order_code' => $cart->order_code
+            'order_code' => $cart->getOrderCode()
         ]);
-        $cart = (new PurchaseController)->get($request)->original[0];
+        $cart = (new PurchaseService)->get($request);
 
-        $this->assertEquals(2, $cart->count());
+        $this->assertEquals(2, count($cart->getPurchases()));
     }
 
     public function test_it_should_be_able_to_remove_products_from_cart()
@@ -124,8 +125,8 @@ class PurchaseTest extends TestCase
             'description' => 'Hello World!',
             'VAT' => 21,
         ]);
-        (new ProductController)->create($request);
-        (new ProductController)->create($request);
+        (new ProductService)->create($request);
+        (new ProductService)->create($request);
 
         $products = Product::all();
 
@@ -138,20 +139,20 @@ class PurchaseTest extends TestCase
             'products' => $ids
         ]);
 
-        $cart = (new PurchaseController)->create($request)->original[0];
+        $cart = (new PurchaseService)->create($request);
 
-        $this->assertEquals(2, $cart->count());
+        $this->assertEquals(2, count($cart->getPurchases()));
 
-        $ids = [$cart->first()->id];
+        $ids = [$cart->getPurchases()[0]->id];
 
         $request = new Request([
-            'order_code' => $cart->order_code,
+            'order_code' => $cart->getOrderCode(),
             'products' => $ids,
         ]);
 
-        $cart = (new PurchaseController)->remove($request)->original[0];
+        $cart = (new PurchaseService)->remove($request);
 
-        $this->assertEquals(1, $cart->count());
+        $this->assertEquals(1, count($cart->getPurchases()));
     }
 
     public function test_it_should_be_able_to_get_subtotal_of_cart()
@@ -162,8 +163,8 @@ class PurchaseTest extends TestCase
             'description' => 'Hello World!',
             'VAT' => 21,
         ]);
-        (new ProductController)->create($request);
-        (new ProductController)->create($request);
+        (new ProductService)->create($request);
+        (new ProductService)->create($request);
 
         $products = Product::all();
 
@@ -176,15 +177,9 @@ class PurchaseTest extends TestCase
             'products' => $ids
         ]);
 
-        $cart = (new PurchaseController)->create($request)->original[0];
+        $cart = (new PurchaseService)->create($request);
 
-        $request = new Request([
-            'order_code' => $cart->order_code
-        ]);
-
-        $subTotal = (new PurchaseController)->subTotal($request);
-
-        $this->assertEquals(102000, $subTotal);
+        $this->assertEquals(102000, $cart->getSubTotal());
     }
 
     public function test_it_should_be_able_to_get_Vat_amount_of_cart()
@@ -195,8 +190,8 @@ class PurchaseTest extends TestCase
             'description' => 'Hello World!',
             'VAT' => 21,
         ]);
-        (new ProductController)->create($request);
-        (new ProductController)->create($request);
+        (new ProductService)->create($request);
+        (new ProductService)->create($request);
 
         $products = Product::all();
 
@@ -209,15 +204,9 @@ class PurchaseTest extends TestCase
             'products' => $ids
         ]);
 
-        $cart = (new PurchaseController)->create($request)->original[0];
+        $cart = (new PurchaseService)->create($request);
 
-        $request = new Request([
-            'order_code' => $cart->order_code
-        ]);
-
-        $subTotal = (new PurchaseController)->amountOfVat($request);
-
-        $this->assertEquals(21420, $subTotal);
+        $this->assertEquals(21420, $cart->getVatSum());
     }
 
     public function test_it_should_be_able_to_get_total_of_cart()
@@ -228,8 +217,8 @@ class PurchaseTest extends TestCase
             'description' => 'Hello World!',
             'VAT' => 21,
         ]);
-        (new ProductController)->create($request);
-        (new ProductController)->create($request);
+        (new ProductService)->create($request);
+        (new ProductService)->create($request);
 
         $products = Product::all();
 
@@ -242,15 +231,9 @@ class PurchaseTest extends TestCase
             'products' => $ids
         ]);
 
-        $cart = (new PurchaseController)->create($request)->original[0];
+        $cart = (new PurchaseService)->create($request);
 
-        $request = new Request([
-            'order_code' => $cart->order_code
-        ]);
-
-        $subTotal = (new PurchaseController)->total($request);
-
-        $this->assertEquals(123420, $subTotal);
+        $this->assertEquals(123420, $cart->getTotal());
     }
 
 
@@ -262,8 +245,8 @@ class PurchaseTest extends TestCase
             'description' => 'Hello World!',
             'VAT' => 21,
         ]);
-        (new ProductController)->create($request);
-        (new ProductController)->create($request);
+        (new ProductService)->create($request);
+        (new ProductService)->create($request);
 
         $products = Product::all();
 
@@ -276,13 +259,13 @@ class PurchaseTest extends TestCase
             'products' => $ids
         ]);
 
-        $cart = (new PurchaseController)->create($request)->original[0];
+        $cart = (new PurchaseService)->create($request);
 
         $request = new Request([
-            'order_code' => $cart->order_code
+            'order_code' => $cart->getOrderCode()
         ]);
 
-        $orderCode = (new PurchaseController)->buy($request);
+        $orderCode = (new PurchaseService)->buy($request);
 
         $this->assertEquals('a000', $orderCode);
 

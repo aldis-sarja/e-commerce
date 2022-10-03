@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Http\Controllers\ProductController;
+use App\Services\ProductService;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Tests\Testcase;
@@ -34,7 +34,7 @@ class ProductTest extends TestCase
             'VAT' => 21,
         ]);
 
-        (new ProductController)->create($request);
+        (new ProductService)->create($request);
 
         $product = Product::firstWhere([
             ['name', '=', 'TV03'],
@@ -52,7 +52,7 @@ class ProductTest extends TestCase
 
     public function test_it_should_be_able_to_get_product_list()
     {
-        (new ProductController)->create(
+        (new ProductService)->create(
             new Request([
                 'name' => 'TV05',
                 'price' => 38000,
@@ -60,7 +60,7 @@ class ProductTest extends TestCase
                 'VAT' => 21,
             ]));
 
-        $product = (new ProductController)->getAll()->first()->first();
+        $product = (new ProductService)->getAll()->first()->first();
 
         $this->assertNotNull($product);
 
@@ -74,7 +74,7 @@ class ProductTest extends TestCase
 
     public function test_it_should_be_able_to_get_one_type_of_product()
     {
-        (new ProductController)->create(
+        (new ProductService)->create(
             new Request([
                 'name' => 'Hammer',
                 'price' => 1200,
@@ -82,7 +82,7 @@ class ProductTest extends TestCase
                 'VAT' => 21,
             ]));
 
-        $products = (new ProductController)->getByName("Hammer");
+        $products = (new ProductService)->getByName("Hammer");
         $this->assertNotNull($products);
 
         $this->assertEquals('Hammer', $products->first()->name);
@@ -96,10 +96,10 @@ class ProductTest extends TestCase
             'description' => 'Hello World!',
             'VAT' => 21,
         ]);
-        (new ProductController)->create($request);
-        (new ProductController)->create($request);
+        (new ProductService)->create($request);
+        (new ProductService)->create($request);
 
-        $products = (new ProductController)->getByName("Hammer");
+        $products = (new ProductService)->getByName("Hammer");
         $this->assertNotNull($products);
 
         $this->assertEquals('Hammer', $products->first()->name);
@@ -115,9 +115,9 @@ class ProductTest extends TestCase
             'VAT' => 21,
             'amount' => 5,
         ]);
-        (new ProductController)->createAmount($request);
+        (new ProductService)->createAmount($request);
 
-        $products = (new ProductController)->getByName("Hammer");
+        $products = (new ProductService)->getByName("Hammer");
         $this->assertNotNull($products);
 
         $this->assertEquals('Hammer', $products->first()->name);
@@ -126,7 +126,7 @@ class ProductTest extends TestCase
 
     public function test_it_should_be_able_to_remove_product()
     {
-        (new ProductController)->create(
+        (new ProductService)->create(
             new Request([
                 'name' => 'Hammer',
                 'price' => 1200,
@@ -144,7 +144,7 @@ class ProductTest extends TestCase
         $this->assertEquals('Hammer', $product->name);
 
         // Remove
-        (new ProductController)->remove($product->id);
+        (new ProductService)->remove($product->id);
 
         $product = Product::firstWhere($product->id);
 
@@ -153,7 +153,7 @@ class ProductTest extends TestCase
 
     public function test_it_should_be_able_to_reserve_product()
     {
-        (new ProductController)->create(
+        (new ProductService)->create(
             new Request([
                 'name' => 'Hammer',
                 'price' => 1200,
@@ -164,7 +164,7 @@ class ProductTest extends TestCase
         $product = Product::all()->first();
 
         // Reserve
-        (new ProductController)->reserve($product->id);
+        (new ProductService)->reserve($product->id);
 
         $product = Product::find($product->id);
 
@@ -173,7 +173,7 @@ class ProductTest extends TestCase
 
     public function test_it_should_be_able_to_unset_reserved_flag_for_product()
     {
-        (new ProductController)->create(
+        (new ProductService)->create(
             new Request([
                 'name' => 'Hammer',
                 'price' => 1200,
@@ -184,18 +184,18 @@ class ProductTest extends TestCase
         $product = Product::all()->first();
         $id = $product->id;
 
-        (new ProductController)->reserve($id);
+        (new ProductService)->reserve($id);
         $product = Product::find($id);
         $this->assertNotNull($product->reserved);
 
-        (new ProductController)->reserveUnset($id);
+        (new ProductService)->reserveUnset($id);
         $product = Product::find($id);
         $this->assertNull($product->reserved);
     }
 
     public function test_it_should_be_able_to_change_price_for_product()
     {
-        (new ProductController)->create(
+        (new ProductService)->create(
             new Request([
                 'name' => 'Hammer',
                 'price' => 1200,
@@ -207,7 +207,7 @@ class ProductTest extends TestCase
             ['name', '=', 'Hammer']
         ]);
 
-        (new ProductController)->changePrice($product->id, 1300);
+        (new ProductService)->changePrice($product->id, 1300);
 
         $product = Product::find($product->id);
 
@@ -223,9 +223,9 @@ class ProductTest extends TestCase
             'VAT' => 21,
             'amount' => 3,
         ]);
-        (new ProductController)->createAmount($request);
+        (new ProductService)->createAmount($request);
 
-        (new ProductController)->changePriceByName(new Request([
+        (new ProductService)->changePriceByName(new Request([
             'name' => 'Hammer',
             'price' => 1400,
         ]));
@@ -241,7 +241,7 @@ class ProductTest extends TestCase
 
     public function test_it_should_be_able_to_change_VAT_for_product()
     {
-        (new ProductController)->create(
+        (new ProductService)->create(
             new Request([
                 'name' => 'Hammer',
                 'price' => 1200,
@@ -253,7 +253,7 @@ class ProductTest extends TestCase
             ['name', '=', 'Hammer']
         ]);
 
-        (new ProductController)->changeVAT($product->id, 13);
+        (new ProductService)->changeVAT($product->id, 13);
 
         $product = Product::find($product->id);
         $this->assertEquals(13, $product->VAT);
@@ -268,9 +268,9 @@ class ProductTest extends TestCase
             'VAT' => 21,
             'amount' => 3,
         ]);
-        (new ProductController)->createAmount($request);
+        (new ProductService)->createAmount($request);
 
-        (new ProductController)->changeVATByName(new Request([
+        (new ProductService)->changeVATByName(new Request([
             'name' => 'Hammer',
             'VAT' => 13,
         ]));
@@ -293,9 +293,9 @@ class ProductTest extends TestCase
             'VAT' => 21,
             'amount' => 3,
         ]);
-        (new ProductController)->createAmount($request);
+        (new ProductService)->createAmount($request);
 
-        (new ProductController)->changeName(new Request([
+        (new ProductService)->changeName(new Request([
             'name' => 'Hammer',
             'new_name' => 'Axe',
         ]));
@@ -316,9 +316,9 @@ class ProductTest extends TestCase
             'VAT' => 21,
             'amount' => 1,
         ]);
-        (new ProductController)->createAmount($request);
+        (new ProductService)->createAmount($request);
 
-        (new ProductController)->changeAmount(new Request([
+        (new ProductService)->changeAmount(new Request([
             'name' => 'Hammer',
             'amount' => 3,
         ]));
@@ -339,9 +339,9 @@ class ProductTest extends TestCase
             'VAT' => 21,
             'amount' => 3,
         ]);
-        (new ProductController)->createAmount($request);
+        (new ProductService)->createAmount($request);
 
-        (new ProductController)->changeAmount(new Request([
+        (new ProductService)->changeAmount(new Request([
             'name' => 'Hammer',
             'amount' => 2,
         ]));

@@ -33,14 +33,21 @@ class ProductController extends Controller
         );
 
         $this->productService->create($request);
+
+        return redirect('products');
     }
 
     public function getAll(Request $request)
     {
-        $cart = $this->purchaseService->get($request);
+        $routeName = Route::current()->getName();
 
+        if ($routeName !== 'products') {
+            $cart = $this->purchaseService->get($request);
+        } else {
+            $cart = null;
+        }
 
-        return view(Route::current()->getName(), [
+        return view($routeName, [
             'products' => $this->productService->getAll(),
             'cart' => $cart
         ]);
@@ -64,6 +71,8 @@ class ProductController extends Controller
         );
 
         $this->productService->createAmount($request);
+
+        redirect('/products');
     }
 
     public function remove(int $id)

@@ -75,7 +75,7 @@ class ProductService
         for ($c = 0; $c < $request->get('amount'); $c++) {
             $product = new Product([
                 'name' => $request->name,
-                'price' => $request->price,
+                'price' => $request->price * 100,
                 'description' => $request->description,
                 'VAT' => $request->VAT,
             ]);

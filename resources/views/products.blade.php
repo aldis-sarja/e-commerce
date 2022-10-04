@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -282,6 +283,22 @@
             width: auto
         }
 
+        .w-12 {
+            width: 3rem;
+        }
+
+        .w-16 {
+            width: 4rem;
+        }
+
+        .w-20 {
+            width: 5rem;
+        }
+
+        .w-32 {
+            width: 8rem;
+        }
+
         .grid-cols-1 {
             grid-template-columns:repeat(1, minmax(0, 1fr))
         }
@@ -399,6 +416,14 @@
         .cursor-pointer {
             cursor: pointer;
         }
+
+        .flex-row {
+            flex-direction: row;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
     </style>
 
     <style>
@@ -407,37 +432,53 @@
         }
     </style>
 </head>
+
 <body class="antialiased">
 
 <div class="flex items-top sm:justify-between p-6">
     <a href="/">
-    <h2>
-        Shopping
-    </h2>
+        <h2>
+            Shopping
+        </h2>
     </a>
     <a href="/products"
-    class="mt-8">
+       class="mt-8">
         Products
     </a>
-
-        @if ($cart)
-            <a href="cart"
-                class="flex-col py-4">
-                <div>
-                Cart: [{{ $cart->purchases->count() }}]
-                </div>
-                <div>
-                € {{ round($cart->getTotal()/100, 2) }}
-                </div>
-            </a>
-        @endif
-
-
 </div>
 
-<div
-    class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+<div class="p-6 py-4">
+    {{--    class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">--}}
 
+    <div class="p-6 ml-4">
+        <form method="POST" action="products">
+            @csrf
+            <div class="flex-col">
+                <div class="flex-row">
+                    <input class="p-6" type="text" placeholder="Product Name..." name="name" required>
+                    <label class="p-6 ml-4" for="price">Price:</label>
+                    <input class="w-20" type="number" min="0.01" step="0.01" name="price"
+                                                            id="price" required>
+
+
+                    <label class="p-6 ml-4" for="amount">Amount:</label>
+                    <input class="w-16" type="number" min="1" step="1" value="1" name="amount"
+                                                              id="amount" required>
+
+
+
+                    <label class="p-6 ml-4" for="VAT">VAT:</label>
+                    <input class="w-12" type="number" min="1" step="1" value="21" name="VAT"
+                                                        id="VAT" required>
+
+                </div>
+                <div class="flex flex-col sm:justify-end">
+                <textarea class="p-6" placeholder="Description..." name="description" required></textarea>
+                <input class="rounded-full p-4 px-6 w-32 cursor-pointer" type="submit" value="Add Product">
+                </div>
+            </div>
+        </form>
+    </div>
 
     @if ($products)
         <ul>
@@ -445,16 +486,10 @@
                 <li class="py-4">
                     <div class="flex flex-row sm:justify-between">
                         <div>
-                        {{ $name }}
-                        &emsp;€ {{ round($product->first()->price/100, 2) }}
-                        &emsp; amount: {{ $product->count() }}
+                            {{ $name }}
+                            &emsp;€ {{ round($product->first()->price/100, 2) }}
+                            &emsp; amount: {{ $product->count() }}
                         </div>
-
-                    <form method="POST" action="cart/add">
-                        @csrf
-                            <input class="rounded-full p-4 px-6 cursor-pointer" type="submit" value="Add To Cart">
-                            <input type="hidden" name="products" value="{{ $product->first()->id }}">
-                    </form>
                     </div>
                     <p>{{ $product->first()->description }}</p>
                 </li>
@@ -462,15 +497,13 @@
         </ul>
     @endif
 
-        @if ($errors)
-            @foreach ($errors->all() as $error)
-                <div class="text-red-700 px-7">
-                    {{ $error }}
-                </div>
-            @endforeach
-        @endif
-
-
+    @if ($errors)
+        @foreach ($errors->all() as $error)
+            <div class="text-red-700 px-7">
+                {{ $error }}
+            </div>
+        @endforeach
+    @endif
 
 
 </div>

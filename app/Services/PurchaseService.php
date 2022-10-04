@@ -29,9 +29,12 @@ class PurchaseService
             $purchase->save();
         }
 
-        return new Cart(Purchase::where([
-            ['order_code', '=', $orderCode]
-        ])->with(['product'])->get(), $orderCode);
+        return new Cart([
+            'purchases' => Purchase::where([
+                ['order_code', '=', $orderCode]
+            ])->with(['product'])->get(),
+            'order_code' => $orderCode
+        ]);
     }
 
     public function get(Request $request)

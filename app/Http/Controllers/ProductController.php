@@ -5,17 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Services\ProductService;
+use App\Services\PurchaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Route;
 use Ramsey\Collection\Collection;
 
 class ProductController extends Controller
 {
-    private ProductService $service;
+    private ProductService $productService;
+    private PurchaseService $purchaseService;
 
-    public function __construct(ProductService $service)
+    public function __construct(ProductService $productService, PurchaseService $purchaseService)
     {
-        $this->service = $service;
+        $this->productService = $productService;
+        $this->purchaseService = $purchaseService;
     }
 
     public function create(Request $request)
@@ -28,22 +32,24 @@ class ProductController extends Controller
             ]
         );
 
-        $this->service->create($request);
+        $this->productService->create($request);
     }
 
-    public function getAll()
+    public function getAll(Request $request)
     {
+        $cart = $this->purchaseService->get($request);
 
-        return view('welcome', [
-            'products' => $this->service->getAll(),
-            'cart' => null
+
+        return view(Route::current()->getName(), [
+            'products' => $this->productService->getAll(),
+            'cart' => $cart
         ]);
 
     }
 
     public function getByName(string $name)
     {
-        return view('product', ['products' => $this->service->getByName($name)]);
+        return view('product', ['products' => $this->productService->getByName($name)]);
     }
 
     public function createAmount(Request $request)
@@ -57,22 +63,22 @@ class ProductController extends Controller
             ]
         );
 
-        $this->service->createAmount($request);
+        $this->productService->createAmount($request);
     }
 
     public function remove(int $id)
     {
-        $this->service->remove($id);
+        $this->productService->remove($id);
     }
 
     public function reserve($id)
     {
-        $this->service->remove($id);
+        $this->productService->remove($id);
     }
 
     public function reserveUnset($id)
     {
-        $this->service->reserveUnset($id);
+        $this->productService->reserveUnset($id);
     }
 
     public function changePrice(int $id, int $price)
@@ -87,12 +93,12 @@ class ProductController extends Controller
             'price' => 'required|gt:0',
         ]);
 
-        $this->service->changePriceByName($request);
+        $this->productService->changePriceByName($request);
     }
 
     public function changeVAT(int $id, int $VAT)
     {
-        $this->service->changeVAT($id, $VAT);
+        $this->productService->changeVAT($id, $VAT);
     }
 
     public function changeVATByName(Request $request)
@@ -102,7 +108,7 @@ class ProductController extends Controller
             'VAT' => 'required',
         ]);
 
-        $this->service->changeVATByName($request);
+        $this->productService->changeVATByName($request);
     }
 
     public function changeName(Request $request)
@@ -112,7 +118,7 @@ class ProductController extends Controller
             'new_name' => 'required',
         ]);
 
-        $this->service->changeName($request);
+        $this->productService->changeName($request);
     }
 
     public function changeAmount(Request $request)
@@ -123,6 +129,6 @@ class ProductController extends Controller
             ]
         );
 
-        $this->service->changeAmount($request);
+        $this->productService->changeAmount($request);
     }
 }

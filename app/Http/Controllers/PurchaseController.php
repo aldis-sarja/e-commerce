@@ -24,26 +24,9 @@ class PurchaseController extends Controller
             'products' => 'required'
         ]);
 
-        $cart = $this->service->create($request);
+        $this->service->create($request);
 
-        $orderCode = $cart->getPurchases()[0]->order_code;
-
-        if (!($request->cookie('order_code'))) {
-//            $response = response($cart)->cookie('order_code', $orderCode, 60);
-            Cookie::queue('order_code', $orderCode, 1440);
-        } else {
-//            $response = response($cart);
-        }
-        return view('welcome', [
-            'products' => (new ProductService)->getAll(),
-            'cart' => $cart
-        ]);
-
-//        return view('welcome', [
-//            'products' => (new ProductService)->getAll(),
-//            'cart' => $response
-//        ]);
-
+        return redirect('/');
     }
 
     public function get(Request $request)
@@ -66,7 +49,7 @@ class PurchaseController extends Controller
 //        ];
 //        $wtf = new CartResource($cart);
 //        dd($wtf->resource);
-        return view('welcome', [
+        return view('cart', [
             'products' => (new ProductService)->getAll(),
 //            'cart' => $wtf
             'cart' => $cart

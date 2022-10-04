@@ -391,6 +391,14 @@
                 color: rgba(107, 114, 128, var(--tw-text-opacity))
             }
         }
+
+        .rounded-full {
+            border-radius: 9999px;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
     </style>
 
     <style>
@@ -402,18 +410,26 @@
 <body class="antialiased">
 
 <div class="flex items-top sm:justify-between p-6">
+    <a href="/">
     <h2>
-        Store
+        Shopping
     </h2>
+    </a>
+    <a href="/products"
+    class="mt-8">
+        Products
+    </a>
+
         @if ($cart)
-            <div class="flex-col py-4">
+            <a href="cart"
+                class="flex-col py-4">
                 <div>
                 Cart: [{{ $cart->purchases->count() }}]
                 </div>
                 <div>
                 € {{ round($cart->getTotal()/100, 2) }}
                 </div>
-            </div>
+            </a>
         @endif
 
 
@@ -426,20 +442,20 @@
     @if ($products)
         <ul>
             @foreach ($products as $name => $product)
-                <li>
-                    <div class="product">
+                <li class="py-4">
+                    <div class="flex flex-row sm:justify-between">
+                        <div>
                         {{ $name }}
                         &emsp;€ {{ round($product->first()->price/100, 2) }}
                         &emsp; amount: {{ $product->count() }}
-                    </div>
-                    <form method="POST" action="cart/add">
-                        @csrf
-                        <div class="add-button">
-                            <input type="submit" value="Add To Cart">
-                            <input type="hidden" name="products" value="{{ $product->first()->id }}">
                         </div>
-                    </form>
 
+                    <form method="POST" action="cart">
+                        @csrf
+                            <input class="rounded-full p-4 px-6 cursor-pointer" type="submit" value="Add To Cart">
+                            <input type="hidden" name="products" value="{{ $product->first()->id }}">
+                    </form>
+                    </div>
                     <p>{{ $product->first()->description }}</p>
                 </li>
             @endforeach

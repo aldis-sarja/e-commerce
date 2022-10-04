@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CartResource;
 use App\Services\ProductService;
 use App\Services\PurchaseService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 
 
 class PurchaseController extends Controller
@@ -27,15 +29,20 @@ class PurchaseController extends Controller
         $orderCode = $cart->getPurchases()[0]->order_code;
 
         if (!($request->cookie('order_code'))) {
-            $response = response($cart)->cookie('order_code', $orderCode, 5);
+//            $response = response($cart)->cookie('order_code', $orderCode, 60);
+            Cookie::queue('order_code', $orderCode, 1440);
         } else {
-            $response = response($cart);
+//            $response = response($cart);
         }
-
         return view('welcome', [
             'products' => (new ProductService)->getAll(),
-            'cart' => $response
+            'cart' => $cart
         ]);
+
+//        return view('welcome', [
+//            'products' => (new ProductService)->getAll(),
+//            'cart' => $response
+//        ]);
 
     }
 
@@ -43,13 +50,27 @@ class PurchaseController extends Controller
     {
         $cart = $this->service->get($request);
 
-        if (!$cart) {
-            return view('welcome', ['products' => (new ProductService)->getAll()]);
-        }
+//        if (!$cart) {
+//            return view('welcome', ['products' => (new ProductService)->getAll()]);
+//        }
+//        dd($cart->purchases->first());
+//        dd(new CartResource($cart));
 
+//        dd("BĻAĢ!", $cart);
+//        $wtf = [
+//            'order_code' => $cart->order_code,
+//            'purchases' => $cart->purchases,
+//            'price' => $cart->getTotal(),
+//            'sub_total' => $cart->getSubTotal(),
+//            'VAT_sum' => $cart->getVatSum()
+//        ];
+//        $wtf = new CartResource($cart);
+//        dd($wtf->resource);
         return view('welcome', [
             'products' => (new ProductService)->getAll(),
-            'cart' => response($cart)
+//            'cart' => $wtf
+            'cart' => $cart
+//            'cart' => response()->json($wtf)
         ]);
     }
 
@@ -72,6 +93,8 @@ class PurchaseController extends Controller
         if(!$orderCode) {
             return view('welcome', ['products' => (new ProductService)->getAll()]);
         }
+
+        Cookie::expire('order_code');
 
         return view('purchase-confirmation', ['code' => $orderCode]);
     }

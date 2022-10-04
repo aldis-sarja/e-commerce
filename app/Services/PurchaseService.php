@@ -15,8 +15,11 @@ class PurchaseService
     public function create(Request $request)
     {
         $orderCode = $this->getOrMakeOrderCode($request);
-
-        foreach ($request->get('products') as $id) {
+        $products = $request->get('products');
+        if (!is_array($products)) {
+            $products = [$products];
+        }
+        foreach ($products as $id) {
             Product::findOrFail($id);
             (new ProductService)->reserve($id);
             $purchase = new Purchase([
@@ -39,9 +42,17 @@ class PurchaseService
             return null;
         }
 
-        return new Cart(Purchase::where([
-            ['order_code', '=', $orderCode]
-        ])->with(['product'])->get(), $orderCode);
+//        return new Cart(Purchase::where([
+//            ['order_code', '=', $orderCode]
+//        ])->with(['product'])->get(), $orderCode);
+
+        return new Cart([
+            'purchases' => Purchase::where([
+                ['order_code', '=', $orderCode]])
+                ->with(['product'])->get(),
+            'order_code' => $orderCode
+        ]);
+
     }
 
     public function remove(Request $request)

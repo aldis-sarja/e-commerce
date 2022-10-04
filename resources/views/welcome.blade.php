@@ -400,25 +400,62 @@
     </style>
 </head>
 <body class="antialiased">
+
+<div class="flex items-top sm:justify-between p-6">
+    <h2>
+        Store
+    </h2>
+        @if ($cart)
+            <div class="flex-col py-4">
+                <div>
+                Cart: [{{ $cart->purchases->count() }}]
+                </div>
+                <div>
+                € {{ round($cart->getTotal()/100, 2) }}
+                </div>
+            </div>
+        @endif
+
+
+</div>
+
 <div
     class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
 
-    @if ($errors)
-        @foreach ($errors->all() as $error)
-            <div class="text-red-700 px-7">
-                {{ $error }}
-            </div>
-        @endforeach
-    @else
 
-    <ul>
-        @foreach ($products as $product)
-            <li>{{ $product->name }} - &emsp; {{ round($product->price /100, 2)}}</li>
+    @if ($products)
+        <ul>
+            @foreach ($products as $name => $product)
+                <li>
+                    <div class="product">
+                        {{ $name }}
+                        &emsp;€ {{ round($product->first()->price/100, 2) }}
+                        &emsp; amount: {{ $product->count() }}
+                    </div>
+                    <form method="POST" action="cart/add">
+                        @csrf
+                        <div class="add-button">
+                            <input type="submit" value="Add To Cart">
+                            <input type="hidden" name="products" value="{{ $product->first()->id }}">
+                        </div>
+                    </form>
 
-        @endforeach
-    </ul>
-
+                    <p>{{ $product->first()->description }}</p>
+                </li>
+            @endforeach
+        </ul>
     @endif
+
+        @if ($errors)
+            @foreach ($errors->all() as $error)
+                <div class="text-red-700 px-7">
+                    {{ $error }}
+                </div>
+            @endforeach
+        @endif
+
+
+
 
 </div>
 </body>

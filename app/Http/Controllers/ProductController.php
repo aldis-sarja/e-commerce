@@ -34,7 +34,10 @@ class ProductController extends Controller
     public function getAll()
     {
 
-        return view('welcome', ['products' => $this->service->getAll()]);
+        return view('welcome', [
+            'products' => $this->service->getAll(),
+            'cart' => null
+        ]);
 
     }
 

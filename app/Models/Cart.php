@@ -6,31 +6,36 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cart extends Model
 {
-    private array $purchases;
-    private $orderCode;
+    protected $fillable = [
+        'order_code',
+        'purchases'
+    ];
 
-    public function __construct($purchases, $orderCode)
-    {
-        foreach ($purchases as $purchase) {
-            $this->add($purchase);
-        }
-        $this->orderCode = $orderCode;
-    }
+//    private array $purchases;
+//    private $orderCode;
 
-    private function add(Purchase $purchase)
-    {
-        $this->purchases[] = $purchase;
-    }
-
-    public function getPurchases(): array
-    {
-        return $this->purchases;
-    }
-
-    public function getOrderCode()
-    {
-        return $this->orderCode;
-    }
+//    public function __construct($purchases, $orderCode)
+//    {
+//        foreach ($purchases as $purchase) {
+//            $this->add($purchase);
+//        }
+//        $this->orderCode = $orderCode;
+//    }
+//
+//    private function add(Purchase $purchase)
+//    {
+//        $this->purchases[] = $purchase;
+//    }
+//
+//    public function getPurchases(): array
+//    {
+//        return $this->purchases;
+//    }
+//
+//    public function getOrderCode()
+//    {
+//        return $this->orderCode;
+//    }
 
     public function getSubTotal(): int
     {

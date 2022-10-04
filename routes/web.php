@@ -17,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [App\Http\Controllers\ProductController::class, 'getAll']);
 
 Route::post('/product/add', [App\Http\Controllers\ProductController::class, 'createAmount']);
+
+Route::get('cart', [App\Http\Controllers\PurchaseController::class, 'get']);
+Route::post('cart/add', [App\Http\Controllers\PurchaseController::class, 'create']);

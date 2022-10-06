@@ -118,7 +118,7 @@ class ProductService
         ])->get();
 
         foreach ($products as $product) {
-            $product->price = $request->price;
+            $product->price = $request->price * 100;
             $product->save();
         }
     }
@@ -157,6 +157,20 @@ class ProductService
         }
     }
 
+    public function changeDescription(Request $request)
+    {
+        $products = Product::where([
+            ['reserved', '=', null],
+            ['name', '=', $request->name]
+        ])->get();
+
+        foreach ($products as $product) {
+            $product->update([
+                'description' => $request->description
+            ]);
+        }
+    }
+
     public function changeAmount(Request $request)
     {
         $products = Product::where([
@@ -166,7 +180,7 @@ class ProductService
 
         $currentAmount = $products->count();
 
-        if ($currentAmount === $request->amount) {
+        if ($currentAmount === $request->get('amount')) {
             return;
         }
 

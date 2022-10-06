@@ -56,7 +56,7 @@ class ProductController extends Controller
 
     public function getByName(string $name)
     {
-        return view('product', ['products' => $this->productService->getByName($name)]);
+        return view('product', ['product' => $this->productService->getByName($name)]);
     }
 
     public function createAmount(Request $request)
@@ -72,7 +72,7 @@ class ProductController extends Controller
 
         $this->productService->createAmount($request);
 
-        redirect('/products');
+        return redirect('/products');
     }
 
     public function remove(int $id)
@@ -103,6 +103,9 @@ class ProductController extends Controller
         ]);
 
         $this->productService->changePriceByName($request);
+
+        $routeName = Route::current()->getName();
+        return redirect('/' . $routeName . '/' . $request->get('name'));
     }
 
     public function changeVAT(int $id, int $VAT)
@@ -117,7 +120,10 @@ class ProductController extends Controller
             'VAT' => 'required',
         ]);
 
-        $this->productService->changeVATByName($request);
+        $this->productService->changeVatByName($request);
+
+        $routeName = Route::current()->getName();
+        return redirect('/' . $routeName . '/' . $request->get('name'));
     }
 
     public function changeName(Request $request)
@@ -128,6 +134,22 @@ class ProductController extends Controller
         ]);
 
         $this->productService->changeName($request);
+
+        $routeName = Route::current()->getName();
+        return redirect('/' . $routeName . '/' . $request->get('new_name'));
+    }
+
+    public function changeDescription(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'description' => 'required',
+        ]);
+
+        $this->productService->changeDescription($request);
+
+        $routeName = Route::current()->getName();
+        return redirect('/' . $routeName . '/' . $request->get('name'));
     }
 
     public function changeAmount(Request $request)
@@ -139,5 +161,13 @@ class ProductController extends Controller
         );
 
         $this->productService->changeAmount($request);
+
+        $routeName = Route::current()->getName();
+        if ($request->get('amount')) {
+
+            return redirect('/' . $routeName . '/' . $request->get('name'));
+        } else {
+            return redirect('/' . $routeName);
+        }
     }
 }

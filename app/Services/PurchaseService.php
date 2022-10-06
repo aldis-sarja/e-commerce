@@ -45,16 +45,17 @@ class PurchaseService
             return null;
         }
 
-//        return new Cart(Purchase::where([
-//            ['order_code', '=', $orderCode]
-//        ])->with(['product'])->get(), $orderCode);
-
-        return new Cart([
+        $cart = new Cart([
             'purchases' => Purchase::where([
                 ['order_code', '=', $orderCode]])
                 ->with(['product'])->get(),
             'order_code' => $orderCode
         ]);
+
+        if ($cart->purchases->count() < 1) {
+            return null;
+        }
+        return $cart;
 
     }
 
@@ -96,10 +97,10 @@ class PurchaseService
         ])->with(['product'])->get();
 
         foreach ($purchases as $purchase) {
-            $purchase->update([
-                'confirmed' => Carbon::now(),
-                'sent' => Carbon::now()
-            ]);
+
+            $purchase->confirmed = Carbon::now();
+            $purchase->sent = Carbon::now();
+            $purchase->save();
 
             $product = Product::find($purchase->product_id);
             $product->delete();

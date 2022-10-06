@@ -24,7 +24,12 @@ class PurchaseController extends Controller
             'products' => 'required'
         ]);
 
-        $this->service->create($request);
+        $cart = $this->service->create($request);
+        if ($cart) {
+            if (!$request->cookie('order_code')) {
+                Cookie::queue('order_code', $cart->order_code, 1440);
+            }
+        }
 
         return redirect('/');
     }
@@ -74,10 +79,11 @@ class PurchaseController extends Controller
         $orderCode = $this->service->buy($request);
 
         if(!$orderCode) {
-            return view('welcome', ['products' => (new ProductService)->getAll()]);
+//            return view('welcome', ['products' => (new ProductService)->getAll()]);
+            return redirect('/');
         }
-
-        Cookie::expire('order_code');
+        Cookie::queue(Cookie::forget('order_code'));
+//        Cookie::expire('order_code');
 
         return view('purchase-confirmation', ['code' => $orderCode]);
     }

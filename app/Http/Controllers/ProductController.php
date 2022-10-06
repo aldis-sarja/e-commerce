@@ -39,6 +39,11 @@ class ProductController extends Controller
 
     public function getAll(Request $request)
     {
+//        if ($request->cookie('order_code')) {
+//            $cookies = \Illuminate\Support\Facades\Cookie::forget('order_code');
+//            return response('products')->withCookie($cookies);
+//        }
+
         $routeName = Route::current()->getName();
 
         if ($routeName !== 'products') {

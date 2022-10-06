@@ -11,32 +11,6 @@ class Cart extends Model
         'purchases'
     ];
 
-//    private array $purchases;
-//    private $orderCode;
-
-//    public function __construct($purchases, $orderCode)
-//    {
-//        foreach ($purchases as $purchase) {
-//            $this->add($purchase);
-//        }
-//        $this->orderCode = $orderCode;
-//    }
-//
-//    private function add(Purchase $purchase)
-//    {
-//        $this->purchases[] = $purchase;
-//    }
-//
-//    public function getPurchases(): array
-//    {
-//        return $this->purchases;
-//    }
-//
-//    public function getOrderCode()
-//    {
-//        return $this->orderCode;
-//    }
-
     public function getSubTotal(): int
     {
         $sum = 0;

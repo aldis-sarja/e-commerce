@@ -40,7 +40,16 @@ class PurchaseController extends Controller
             'name' => 'required'
         ]);
 
-        $this->service->addToPurchase($request);
+        $res = $this->service->addToPurchase($request);
+
+        if (!$res) {
+            $request->validate([
+                'this-does-not-exist' => 'required'
+            ],
+            [
+                'this-does-not-exist.required' => $request->get('name') . ' is not left anymore!'
+            ]);
+        }
 
         return redirect('/cart');
     }

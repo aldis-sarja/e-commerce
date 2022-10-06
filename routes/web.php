@@ -29,3 +29,5 @@ Route::name('products')->post('products/{name}/change_description', [App\Http\Co
 Route::get('cart', [App\Http\Controllers\PurchaseController::class, 'get']);
 Route::post('cart', [App\Http\Controllers\PurchaseController::class, 'create']);
 Route::post('cart/buy', [App\Http\Controllers\PurchaseController::class, 'buy']);
+Route::post('cart/remove', [App\Http\Controllers\PurchaseController::class, 'remove']);
+Route::post('cart/add', [App\Http\Controllers\PurchaseController::class, 'addToCart']);

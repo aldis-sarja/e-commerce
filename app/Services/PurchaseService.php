@@ -20,13 +20,7 @@ class PurchaseService
             $products = [$products];
         }
         foreach ($products as $id) {
-            Product::findOrFail($id);
-            (new ProductService)->reserve($id);
-            $purchase = new Purchase([
-                'order_code' => $orderCode,
-                'product_id' => $id
-            ]);
-            $purchase->save();
+            $this->add($id, $orderCode);
         }
 
         return new Cart([
@@ -35,6 +29,37 @@ class PurchaseService
             ])->with(['product'])->get(),
             'order_code' => $orderCode
         ]);
+    }
+
+    public function addToPurchase(Request $request): bool
+    {
+        $res = false;
+
+        $orderCode = $this->checkForOrderCode($request);
+        if (!$orderCode) {
+            return false;
+        }
+
+        $product = Product::where([
+            ['name', '=', $request->get('name')],
+            ['reserved', '=', null]
+        ])->first();
+        if (!$product) {
+            return false;
+        }
+
+        return $this->add($product->id, $orderCode);
+    }
+
+    private function add(int $id, string $orderCode)
+    {
+        Product::findOrFail($id);
+        (new ProductService)->reserve($id);
+        $purchase = new Purchase([
+            'order_code' => $orderCode,
+            'product_id' => $id
+        ]);
+        return $purchase->save();
     }
 
     public function get(Request $request)
@@ -67,7 +92,12 @@ class PurchaseService
             return null;
         }
 
-        foreach ($request->get('products') as $id) {
+        $ids = $request->get('products');
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        foreach ($ids as $id) {
             $product = Purchase::firstWhere([
                 ['order_code', '=', $orderCode],
                 ['product_id', '=', $id],
@@ -77,11 +107,6 @@ class PurchaseService
                 (new ProductService)->reserveUnset($id);
             }
         }
-
-        return new Cart(Purchase::where([
-            ['order_code', '=', $orderCode]
-        ])->with(['product'])->get(), $orderCode);
-
     }
 
     public function buy(Request $request)

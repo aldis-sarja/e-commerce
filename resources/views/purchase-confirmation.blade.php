@@ -39,7 +39,7 @@
 
 <div class="p-16">
     <div class="flex flex-row">
-        <h2>Congratulation! Your order <b>{{ $code }}</b> has been sent.</h2>
+        <h2>Congratulation! Your order has been sent. Your order code - <b>{{ $code }}</b></h2>
     </div>
 
 </div>

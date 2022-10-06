@@ -63,16 +63,28 @@
     </div>
 
     <div class="flex flex-col">
-    @foreach ($cart->purchases as $item)
+        @foreach ($cart->purchases as $item)
             <div class="flex flex-row">
-            <div class="p-4">
-                {{ $item->product->name }}
+                <form method="POST" action="/cart/remove">
+                    @csrf
+                    <input type="hidden" name="products" value="{{ $item->product->id }}">
+                    <input class="rounded-2xl p-1 w-4 mt-4 cursor-pointer bg-red-400"
+                           type="submit" value="-">
+                </form>
+                    <div class="p-4">
+                        {{ $item->product->name }}
+                    </div>
+                    <div class="p-4">
+                        € {{ number_format($item->product->price/100, 2) }}
+                    </div>
+                <form method="POST" action="/cart/add">
+                    @csrf
+                    <input type="hidden" name="name" value="{{ $item->product->name }}">
+                    <input class="rounded-2xl p-1 w-4 mt-4 cursor-pointer bg-blue-400"
+                           type="submit" value="+">
+                </form>
             </div>
-            <div class="p-4">
-                € {{ number_format($item->product->price/100, 2) }}
-            </div>
-            </div>
-    @endforeach
+        @endforeach
     </div>
 
     <form method="POST" action="/cart/buy">

@@ -6,7 +6,7 @@ You need PHP, composer, Laravel, and node.js to be installed on your OS.
 Project is already configured for SQLite. 
 Download, or clone with git.
 ```bash
-git clone https://github.com/aldis-sarja/e-commerceV1.git
+git clone https://github.com/aldis-sarja/e-commerce.git
 cd e-commerceV1
 npm install
 composer install

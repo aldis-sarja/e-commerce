@@ -33,8 +33,6 @@ class PurchaseService
 
     public function addToPurchase(Request $request): bool
     {
-        $res = false;
-
         $orderCode = $this->checkForOrderCode($request);
         if (!$orderCode) {
             return false;

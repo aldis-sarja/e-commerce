@@ -54,7 +54,7 @@
                         </a>
                     </li>
                     @endif
-                    <li></li><li></li><li></li>
+
                         <li>
                             <a href="/products" class="bg-blue-700 md:bg-transparent text-white block pl-3 pr-4 py-2 md:text-blue-700 md:p-0 rounded" aria-current="page">Store</a>
                         </li>

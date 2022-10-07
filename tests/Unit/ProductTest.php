@@ -238,7 +238,7 @@ class ProductTest extends TestCase
 
         (new ProductService)->changePriceByName(new Request([
             'name' => 'Hammer',
-            'price' => 1400,
+            'price' => 14.00,
         ]));
 
         $products = Product::where([

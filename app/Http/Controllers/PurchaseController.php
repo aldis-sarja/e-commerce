@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CartResource;
 use App\Services\ProductService;
 use App\Services\PurchaseService;
 use Illuminate\Http\Request;
@@ -70,11 +69,6 @@ class PurchaseController extends Controller
 
         return redirect('/cart');
 
-//        if (!$cart) {
-//            return view('welcome', ['products' => (new ProductService)->getAll()]);
-//        }
-
-//        return view('cart', ['cart' => response($cart)]);
     }
 
 
@@ -87,7 +81,6 @@ class PurchaseController extends Controller
             return redirect('/');
         }
         Cookie::queue(Cookie::forget('order_code'));
-//        Cookie::expire('order_code');
 
         return view('purchase-confirmation', ['code' => $orderCode]);
     }

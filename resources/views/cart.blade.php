@@ -67,9 +67,6 @@
                             </div>
                         </li>
                     @endif
-                    <li></li>
-                    <li></li>
-                    <li></li>
                     <li>
                         <a href="/products"
                            class="bg-blue-700 md:bg-transparent text-white block pl-3 pr-4 py-2 md:text-blue-700 md:p-0 rounded"
@@ -83,6 +80,10 @@
 </div>
 
 <script src="https://unpkg.com/@themesberg/flowbite@1.1.1/dist/flowbite.bundle.js"></script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.tailgrids.com/tailgrids-fallback.css"/>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 @if($cart)
     <div class="flex flex-col px-4">
@@ -100,10 +101,6 @@
             </div>
         </div>
 
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="https://cdn.tailgrids.com/tailgrids-fallback.css"/>
-        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
         @if ($errors)
             <div>
                 @foreach ($errors->all() as $error)
@@ -115,7 +112,7 @@
         @endif
 
 
-        <section class="bg-white py-20 lg:py-[120px]">
+        <section class="bg-white py-20 lg:py-[32px]">
             <div class="container">
                 <div class="flex flex-wrap -mx-4">
                     <div class="w-full px-4">
@@ -203,15 +200,16 @@
                 </div>
             </div>
         </section>
-        @endif
+
 
         <form method="POST" action="/cart/buy">
             @csrf
             <input type="submit"
-                   class="rounded-full p-1 ml-6 w-16 mt-4 cursor-pointer bg-green-400 hover:text-white"
+                   class="rounded-full p-1 ml-6 mb-4 w-16 cursor-pointer bg-green-400 hover:text-white"
                    value="Buy">
         </form>
 
     </div>
+@endif
 </body>
 </html>

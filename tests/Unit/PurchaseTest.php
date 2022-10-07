@@ -30,7 +30,7 @@ class PurchaseTest extends TestCase
     {
         $request = new Request([
             'name' => 'TV',
-            'price' => 51000,
+            'price' => 510,
             'description' => 'Hello World!',
             'VAT' => 21,
         ]);
@@ -45,9 +45,9 @@ class PurchaseTest extends TestCase
         $cart = (new PurchaseService)->create($request);
 
         foreach ($cart as $purchase) {
-            $this->assertEquals('a000', $cart->getPurchases()[0]->order_code);
-            $this->assertEquals(51000, $cart->getPurchases()[0]->product->price);
-            $this->assertEquals(21, $cart->getPurchases()[0]->product->VAT);
+            $this->assertEquals('a000', $cart->order_code);
+            $this->assertEquals(510, $cart->purchases->first()->product->price);
+            $this->assertEquals(21, $cart->purchases->first()->product->VAT);
         }
     }
 
@@ -76,12 +76,12 @@ class PurchaseTest extends TestCase
         $cart = (new PurchaseService)->create($request);
 
 
-        $this->assertEquals(2, count($cart->getPurchases()));
+        $this->assertEquals(2, $cart->purchases->count());
 
         foreach ($cart as $purchase) {
-            $this->assertEquals('a000', $cart->getOrderCode());
-            $this->assertEquals(51000, $cart->getPurchases()[0]->product->price);
-            $this->assertEquals(21, $cart->getPurchases()[0]->product->VAT);
+            $this->assertEquals('a000', $cart->order_code);
+            $this->assertEquals(51000, $cart->purchases->first()->product->price);
+            $this->assertEquals(21, $cart->purchases->first()->product->VAT);
         }
     }
 
@@ -110,11 +110,11 @@ class PurchaseTest extends TestCase
         $cart = (new PurchaseService)->create($request);
 
         $request = new Request([
-            'order_code' => $cart->getOrderCode()
+            'order_code' => $cart->order_code
         ]);
         $cart = (new PurchaseService)->get($request);
 
-        $this->assertEquals(2, count($cart->getPurchases()));
+        $this->assertEquals(2, $cart->purchases->count());
     }
 
     public function test_it_should_be_able_to_remove_products_from_cart()
@@ -141,18 +141,23 @@ class PurchaseTest extends TestCase
 
         $cart = (new PurchaseService)->create($request);
 
-        $this->assertEquals(2, count($cart->getPurchases()));
+        $this->assertEquals(2, $cart->purchases->count());
 
-        $ids = [$cart->getPurchases()[0]->id];
+        $ids = [$cart->purchases->first()->product->id];
 
         $request = new Request([
-            'order_code' => $cart->getOrderCode(),
+            'order_code' => $cart->order_code,
             'products' => $ids,
         ]);
 
-        $cart = (new PurchaseService)->remove($request);
+        (new PurchaseService)->remove($request);
 
-        $this->assertEquals(1, count($cart->getPurchases()));
+        $request = new Request([
+            'order_code' => $cart->order_code,
+        ]);
+        $cart = (new PurchaseService)->get($request);
+
+        $this->assertEquals(1, $cart->purchases->count());
     }
 
     public function test_it_should_be_able_to_get_subtotal_of_cart()
@@ -262,7 +267,7 @@ class PurchaseTest extends TestCase
         $cart = (new PurchaseService)->create($request);
 
         $request = new Request([
-            'order_code' => $cart->getOrderCode()
+            'order_code' => $cart->order_code
         ]);
 
         $orderCode = (new PurchaseService)->buy($request);

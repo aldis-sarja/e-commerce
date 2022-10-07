@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ProductResource;
-use App\Models\Product;
 use App\Services\ProductService;
 use App\Services\PurchaseService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
-use Ramsey\Collection\Collection;
 
 class ProductController extends Controller
 {
@@ -39,11 +35,6 @@ class ProductController extends Controller
 
     public function getAll(Request $request)
     {
-//        if ($request->cookie('order_code')) {
-//            $cookies = \Illuminate\Support\Facades\Cookie::forget('order_code');
-//            return response('products')->withCookie($cookies);
-//        }
-
         $routeName = Route::current()->getName();
 
         if ($routeName !== 'products') {

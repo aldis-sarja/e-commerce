@@ -63,11 +63,7 @@ class ProductService
             return $collection;
         }
 
-        return response()->json([
-            'errors' => [
-                'message' => 'Invalid product name'
-            ]],
-            404);
+        return null;
     }
 
     public function createAmount(Request $request)

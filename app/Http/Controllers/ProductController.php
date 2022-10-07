@@ -18,21 +18,6 @@ class ProductController extends Controller
         $this->purchaseService = $purchaseService;
     }
 
-    public function create(Request $request)
-    {
-        $request->validate([
-                'name' => 'required',
-                'price' => 'required|gt:0',
-                'description' => 'required',
-                'VAT' => 'required',
-            ]
-        );
-
-        $this->productService->create($request);
-
-        return redirect('products');
-    }
-
     public function getAll(Request $request)
     {
         $routeName = Route::current()->getName();
@@ -55,7 +40,7 @@ class ProductController extends Controller
         return view('product', ['product' => $this->productService->getByName($name)]);
     }
 
-    public function createAmount(Request $request)
+    public function create(Request $request)
     {
         $request->validate([
                 'name' => 'required',
@@ -86,12 +71,8 @@ class ProductController extends Controller
         $this->productService->reserveUnset($id);
     }
 
-    public function changePrice(int $id, int $price)
-    {
-        $this->reserve($id, $price);
-    }
 
-    public function changePriceByName(Request $request)
+    public function changePrice(Request $request)
     {
         $request->validate([
             'name' => 'required',
@@ -104,12 +85,7 @@ class ProductController extends Controller
         return redirect('/' . $routeName . '/' . $request->get('name'));
     }
 
-    public function changeVAT(int $id, int $VAT)
-    {
-        $this->productService->changeVAT($id, $VAT);
-    }
-
-    public function changeVATByName(Request $request)
+    public function changeVat(Request $request)
     {
         $request->validate([
             'name' => 'required',

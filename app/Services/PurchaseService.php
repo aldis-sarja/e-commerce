@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class PurchaseService
 {
-    public function create(Request $request)
+    public function create(Request $request): Cart
     {
         $orderCode = $this->getOrMakeOrderCode($request);
         $products = $request->get('products');
@@ -49,7 +49,7 @@ class PurchaseService
         return $this->add($product->id, $orderCode);
     }
 
-    private function add(int $id, string $orderCode)
+    private function add(int $id, string $orderCode): bool
     {
         Product::findOrFail($id);
         (new ProductService)->reserve($id);
@@ -60,7 +60,7 @@ class PurchaseService
         return $purchase->save();
     }
 
-    public function get(Request $request)
+    public function get(Request $request): ?Cart
     {
         $orderCode = $this->checkForOrderCode($request);
 
@@ -107,7 +107,7 @@ class PurchaseService
         }
     }
 
-    public function buy(Request $request)
+    public function buy(Request $request): ?string
     {
         $orderCode = $this->checkForOrderCode($request);
 
@@ -131,7 +131,7 @@ class PurchaseService
         return $orderCode;
     }
 
-    private function createNewCode()
+    private function createNewCode():string
     {
         $id = intval(DB::table('counter')->select('count')->get()->first()->count);
 
@@ -142,7 +142,7 @@ class PurchaseService
         return Base62::encode($id);
     }
 
-    private function getOrMakeOrderCode(Request $request)
+    private function getOrMakeOrderCode(Request $request): string
     {
         $orderCode = $this->checkForOrderCode($request);
 
@@ -154,7 +154,7 @@ class PurchaseService
         return $orderCode;
     }
 
-    private function checkForOrderCode(Request $request)
+    private function checkForOrderCode(Request $request): ?string
     {
         $orderCode = $request->get('order_code');
 

@@ -61,12 +61,12 @@ class ProductController extends Controller
         $this->productService->remove($id);
     }
 
-    public function reserve($id)
+    public function reserve(int $id)
     {
         $this->productService->remove($id);
     }
 
-    public function reserveUnset($id)
+    public function reserveUnset(int $id)
     {
         $this->productService->reserveUnset($id);
     }
